@@ -5,36 +5,35 @@ set -o pipefail
 
 function usage()
 {
-   echo "$0 Usage: "
-   echo "This script runs a postgresql backup" 
-   echo "OPTIONS: "
-   echo "-h Help (prints usage)"
-   echo "-c configuration file location. Defaults to the cwd of pgbackup.sh with a file of pgbackup.config"
-   echo "-d Take a backup with a datestamp of NOW"
+    echo "$0 Usage: "
+    echo "This script runs a postgresql backup" 
+    echo "OPTIONS: "
+    echo "-h Help (prints usage)"
+    echo "-c configuration file location. Defaults to the cwd of pgbackup.sh with a file of pgbackup.config"
+    echo "-d Take a backup with a datestamp of NOW"
 }
 
 DATESTAMP="$(date +%a)"
 CONFIG="$(pwd)/pgbackup.config"
 
 while getopts ":hdc:" OPTIONS; do
-   case ${OPTIONS} in
-      h)  
-        usage
-        exit 1
-        ;;
-      d)  
+	case ${OPTIONS} in
+	h)
+		usage
+		exit 1
+		;;
+	d)
 		DATESTAMP="$(date +%a_%F_%T_%Z)"
-        ;;
-      c)
-
-        CONFIG="$OPTARG"
-        ;;
-      ?)  
-        echo "Invalid option: ${OPTARG}"
-        usage
-        exit 1
-        ;;
-   esac
+		;;
+	c)
+		CONFIG="$OPTARG"
+		;;
+	?)
+		echo "Invalid option: ${OPTARG}"
+		usage
+		exit 1
+		;;
+	esac
 done
 shift $((OPTIND-1))
 
