@@ -21,3 +21,5 @@ so there will (hopefully) be no disk space issues because of uncompressed backup
 Be sure to move these off the server to your backup server, of course. =) 
 
 If you change the datestamp, you will change this autorotating behavior. BEWARE. =)
+
+It is definitely recommended that you have a .pgpass set up, and the correct pg_hba.conf settings before using this script.
