@@ -10,7 +10,7 @@ function usage()
     echo "OPTIONS: "
     echo "-h Help (prints usage)"
     echo "-c configuration file location. Defaults to the cwd of pgbackup.sh with a file of pgbackup.config"
-    echo "-d Take a backup with a datestamp of NOW"
+    echo "-d Take a backup with a datestamp of %Y-%m-%d_%H:%M:%S_%Z"
 }
 
 DATESTAMP="$(date +%a)"
