@@ -85,6 +85,11 @@ fi
 
 declare -a STATUS
 
+# Past this point, we don't want to stop on failed commands,
+# because having backups of some databases is better than 
+# having backups of no databases.
+set +e
+
 function check_all_success()
 {
 	ARRAY=("${@}")
@@ -165,7 +170,11 @@ if [[ $ALLOK -eq 0 ]] && [[ $ONEDAY == true ]]; then
 fi
 
 # Delete weekly backups on the one-week day.
-if [[ $ALLOK -eq 0 ]] && [[ $ONEWEEK == true ]] && [[ $WEEKLYDELETEDAY == "$TODAY" ]]; then
+# On the weekly backup day, we double-check that it finished before deleting it.
+# If it isn't the weekly backup day, we delete because the backup, by default,
+# should have been picked up in the last six days and moved off the server.
+if ( [[ $ALLOK -eq 0 ]] && [[ $WEEKLYDAY == "$TODAY" ]] && [[ $ONEWEEK == true ]] && [[ $WEEKLYDELETEDAY == "$TODAY" ]] ) || \
+	( [[ $ONEWEEK == true ]] && [[ $WEEKLYDAY != "$TODAY" ]] && [[ $WEEKLYDELETEDAY == "$TODAY" ]] ) ; then
 	# shellcheck disable=SC2086
 	rm -vf ${BACKUPDIR}/*${LASTWEEK}*
 fi
