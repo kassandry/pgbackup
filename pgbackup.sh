@@ -16,26 +16,25 @@ function usage()
 DATESTAMP="$(date +%a)"
 CONFIG="$(pwd)/pgbackup.config"
 
-while getopts ":hd:c:" OPTIONS; do
+while getopts ":hd::c:" OPTIONS; do
 	case ${OPTIONS} in
 	h)
 		usage
 		exit 1
 		;;
 	d)
-		if [[ -z $OPTARG ]]; then
-			DATESTAMP="$(date +%a_%F_%T_%Z)"
-		else
-			# shellcheck disable=SC2086
-			# If this is invalid, date fails and exits
-			DATESTAMP="$(date $OPTARG)"
-		fi
+		# shellcheck disable=SC2086
+		# If this is invalid, date fails and exits
+		DATESTAMP="$(date $OPTARG)"
 		;;
+	:)
+		DATESTAMP="$(date +%a_%F_%T_%Z)"
+	    ;;
 	c)
 		CONFIG="$OPTARG"
 		;;
 	?)
-		echo "Invalid option: ${OPTARG}"
+		echo "Invalid option: ${OPTIONS}"
 		usage
 		exit 1
 		;;
@@ -114,7 +113,7 @@ function check_all_success()
 # Back Up Each Database in compressed format.
 if [[ $WEEKLYONLY == false ]]; then 
 	# shellcheck disable=SC2086
-	for DATNAME in $($PSQL -U $PGUSER template1 $PGHOST -p $PGPORT --tuples-only -c "SELECT datname FROM pg_database WHERE datistemplate IS FALSE;"); do
+	for DATNAME in $($PSQL -U $PGUSER template1 $PGHOST -p $PGPORT "${PSQL_FLAGS}" -c "SELECT datname FROM pg_database WHERE datistemplate IS FALSE;"); do
 		PGFILE="${BACKUPDIR}/${SERVERNAME}_${DATNAME}_${PGPORT}_${DATESTAMP}.sqlc"
 		# Clean up the previous checksum file
 		rm -vf "${PGFILE}.checksum"
@@ -138,7 +137,7 @@ fi
 # Take a weekly backup of each DB if needed.
 if [[ $WEEKLY == true ]] && [[ $DATESTAMP == "$WEEKLYDAY" ]]; then
 	# shellcheck disable=SC2086 
-	for DATNAME in $($PSQL -U $PGUSER template1 $PGHOST -p $PGPORT --tuples-only -c "SELECT datname FROM pg_database WHERE datistemplate IS FALSE;"); do
+	for DATNAME in $($PSQL -U $PGUSER template1 $PGHOST -p $PGPORT "${PSQL_FLAGS}" -c "SELECT datname FROM pg_database WHERE datistemplate IS FALSE;"); do
 		PGFILE="${BACKUPDIR}/${SERVERNAME}_${DATNAME}_${PGPORT}_${WEEKSTAMP}.sqlc"
 		# Clean up the previous checksum file
 		rm -vf "${PGFILE}.checksum"
