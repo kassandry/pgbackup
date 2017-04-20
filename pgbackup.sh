@@ -113,7 +113,7 @@ function check_all_success()
 # Back Up Each Database in compressed format.
 if [[ $WEEKLYONLY == false ]]; then 
 	# shellcheck disable=SC2086
-	for DATNAME in $($PSQL -U $PGUSER template1 $PGHOST -p $PGPORT "${PSQL_FLAGS}" -c "SELECT datname FROM pg_database WHERE datistemplate IS FALSE;"); do
+	for DATNAME in $($PSQL -U $PGUSER template1 $PGHOST -p $PGPORT ${PSQL_FLAGS} -c "SELECT datname FROM pg_database WHERE datistemplate IS FALSE;"); do
 		PGFILE="${BACKUPDIR}/${SERVERNAME}_${DATNAME}_${PGPORT}_${DATESTAMP}.sqlc"
 		# Clean up the previous checksum file
 		rm -vf "${PGFILE}.checksum"
@@ -137,7 +137,7 @@ fi
 # Take a weekly backup of each DB if needed.
 if [[ $WEEKLY == true ]] && [[ $DATESTAMP == "$WEEKLYDAY" ]]; then
 	# shellcheck disable=SC2086 
-	for DATNAME in $($PSQL -U $PGUSER template1 $PGHOST -p $PGPORT "${PSQL_FLAGS}" -c "SELECT datname FROM pg_database WHERE datistemplate IS FALSE;"); do
+	for DATNAME in $($PSQL -U $PGUSER template1 $PGHOST -p $PGPORT ${PSQL_FLAGS} -c "SELECT datname FROM pg_database WHERE datistemplate IS FALSE;"); do
 		PGFILE="${BACKUPDIR}/${SERVERNAME}_${DATNAME}_${PGPORT}_${WEEKSTAMP}.sqlc"
 		# Clean up the previous checksum file
 		rm -vf "${PGFILE}.checksum"
